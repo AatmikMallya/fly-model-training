@@ -3,15 +3,13 @@
 import numpy as np
 import argparse
 import os
-import random
-import platform
 import importlib
 import pandas as pd
 from scipy.spatial import KDTree
 from neuprint import fetch_skeleton
-from typing import List, Dict, Tuple, Set
-np.set_printoptions(precision=5, suppress=True)  # suppress scientific float notation
-rc('animation', embed_limit=500)
+from typing import List, Tuple
+
+np.set_printoptions(precision=5, suppress=True)
 
 # Local imports
 def import_module(module_name, file_path):
@@ -20,8 +18,7 @@ def import_module(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
-home_dir = '/Users/aatmikmallya/Desktop/research/fly/segmentation'
-config = import_module('config', f'{home_dir}/util_files/config.py')
+home_dir = '/home/am3833/project/fly/segmentation'
 voxel_utils = import_module('voxel_utils', f'{home_dir}/util_files/voxel_utils.py')
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '~/.config/gcloud/application_default_credentials.json'

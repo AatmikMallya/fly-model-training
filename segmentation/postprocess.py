@@ -3,18 +3,12 @@
 import numpy as np
 import argparse
 import os
-import random
-import pandas as pd
 from scipy.spatial import KDTree
-from scipy import ndimage
-from skimage.morphology import skeletonize_3d, ball
+from skimage.morphology import skeletonize_3d
 import networkx as nx
-from typing import List, Set, Tuple
-np.set_printoptions(precision=5, suppress=True)  # suppress scientific float notation
+from typing import Set, Tuple
 
-RANDOM_SEED = 42
-np.random.seed(RANDOM_SEED)
-random.seed(RANDOM_SEED)
+np.set_printoptions(precision=5, suppress=True)
 
 def create_weight_map(box_size: int = 96, center_size: int = 60, min_weight: float = 0.1) -> np.ndarray:
     """Create weight map for volume merging."""

@@ -3,13 +3,13 @@
 import numpy as np
 import argparse
 import os
-import random
 import importlib
-import pandas as pd
+from time import time
 import torch
 from torch.utils.data import Dataset, DataLoader
 from monai.networks.nets import UNet
-np.set_printoptions(precision=5, suppress=True)  # suppress scientific float notation
+
+np.set_printoptions(precision=5, suppress=True)
 
 # Local imports
 def import_module(module_name, file_path):
@@ -18,15 +18,10 @@ def import_module(module_name, file_path):
     spec.loader.exec_module(module)
     return module
 
-home_dir = '/Users/aatmikmallya/Desktop/research/fly/segmentation'
+home_dir = '/home/am3833/project/fly/segmentation'
 voxel_utils = import_module('voxel_utils', f'{home_dir}/util_files/voxel_utils.py')
-dataset = import_module('dataset', f'{home_dir}/dataset.py')
-MicrotubuleDataset = dataset.MicrotubuleDataset
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '~/.config/gcloud/application_default_credentials.json'
 
-RANDOM_SEED = 42
-np.random.seed(RANDOM_SEED)
-random.seed(RANDOM_SEED)
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '~/.config/gcloud/application_default_credentials.json'
 
 class MicrotubuleInferenceDataset(Dataset):
     def __init__(self, gray_data: np.ndarray):
