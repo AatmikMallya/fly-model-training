@@ -1,0 +1,71 @@
+# Virtual environment
+venv/
+
+# Large model checkpoints (>100MB)
+*.pt
+*.pth
+segmentation/best_model/
+segmentation/checkpoints/
+segmentation/nnUNet_results/
+
+# Large data files
+segmentation/swc_LC.csv
+segmentation/training/swc_LC.csv
+
+# Large Jupyter notebooks with outputs (>100MB)
+segmentation/cyto_segment.ipynb
+segmentation/visualize.ipynb
+segmentation/unet_pretrain.ipynb
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+segmentation/.ipynb_checkpoints/
+
+# Weights & Biases logs
+wandb/
+**/wandb/
+
+# MONAI (if it contains large files)
+MONAI/
+
+# Zarr stores
+.zgroup
+.zattrs
+.zarray
+
+# Job output files
+*.err
+*.out
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
