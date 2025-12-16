@@ -246,7 +246,7 @@ def main():
     if dataset_length == 0:
         raise ValueError("Dataset is empty. Please check your data directories.")
 
-    # Split into train/val
+    # 80/20 train/val split: every 5th sample goes to validation
     val_indices = list(range(0, dataset_length, 5))
     train_indices = [i for i in range(dataset_length) if i not in val_indices]
 

@@ -8,8 +8,9 @@ This repository only contains code. All data, logs, models, and large files are 
 ### Final trained model details
 The actual model used to generate the final segmentation is at `/home/am3833/fly/segmentation/best_model/best_final_model.pt`. It can be loaded with the PyTorch library.
 
-Validation metrics for the model:
-**Validation set**
+### Validation metrics for the final model
+
+**Validation set (standard 80/20 split)**
 - Dice: 0.827
 - Precision: 0.866
 - Recall: 0.800
@@ -21,7 +22,7 @@ Validation metrics for the model:
 - Recall: 0.815
 - Loss: 0.017
 
-The model was trained under the folowing configuration:
+The model was trained with the folowing configuration:
 - dropout = 0.2
 - freeze_encoder = false
 - in_channels = 1

@@ -63,12 +63,14 @@ def get_subvols_batched(init_boxes_zyx, datatype, dataset='hemibrain'):
     max_point_zyx = np.flip(np.array([34367, 37888, 41344], dtype=int))
 
     def process_subvolume(subvol, context):
+        """Handle boundary cases by zero-padding where request extends beyond dataset."""
         box_zyx = context['box_zyx']
-        prepend_zyx = context['prepend_zyx']
-        append_zyx = context['append_zyx']
+        prepend_zyx = context['prepend_zyx']  # How much to pad at start of each axis
+        append_zyx = context['append_zyx']    # How much to pad at end of each axis
 
-        subvol = np.transpose(subvol, axes=[2, 1, 0])  # subvol_zyx
+        subvol = np.transpose(subvol, axes=[2, 1, 0])  # xyz -> zyx
 
+        # Pad with zeros where the requested box extended beyond dataset bounds
         for i_axis in range(3):
             if prepend_zyx[i_axis] > 0:
                 box_zyx[0][i_axis] -= prepend_zyx[i_axis]

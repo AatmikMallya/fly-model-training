@@ -290,26 +290,34 @@ def format_metrics(metrics, prefix=''):
 
 # ==================== Data Augmentation ====================
 def get_uniform_transforms():
-    """
-    Generate all possible combinations of rotations and flips for 3D augmentation.
-    Returns a MONAI OneOf transform that randomly selects from 48 possible orientations.
-    """
-    flips = [[], [(0,)]]
+    """Generate all 48 possible 3D orientations for data augmentation.
 
+    A cube has 48 orientation-preserving symmetries (rotations + reflections):
+    - 6 faces can be "up" (pointing in +Z direction)
+    - 4 rotations around the Z axis for each face orientation
+    - 2 choices: original or reflected (flipped)
+    Total: 6 × 4 × 2 = 48 orientations
+
+    Returns a MONAI OneOf transform that uniformly samples from all 48.
+    """
+    flips = [[], [(0,)]]  # No flip, or flip along axis 0
+
+    # Generate 24 rotations (6 faces × 4 rotations each)
     rotations = []
     for face_up in range(6):
         for rotation in range(4):
-            if face_up == 0:
+            # Build sequence of 90° rotations to achieve each orientation
+            if face_up == 0:    # Original face up
                 rots = [(0, 1)] * rotation
-            elif face_up == 1:
+            elif face_up == 1:  # Opposite face up (180° around axis)
                 rots = [(0, 2), (0, 2)] + [(0, 1)] * rotation
-            elif face_up == 2:
+            elif face_up == 2:  # Adjacent face up (90° tilt)
                 rots = [(0, 2)] + [(0, 1)] * rotation
-            elif face_up == 3:
+            elif face_up == 3:  # Adjacent face up (270° tilt)
                 rots = [(0, 2), (0, 2), (0, 2)] + [(0, 1)] * rotation
-            elif face_up == 4:
+            elif face_up == 4:  # Side face up
                 rots = [(1, 2)] + [(1, 0)] * rotation
-            else:
+            else:               # Opposite side face up
                 rots = [(1, 2), (1, 2), (1, 2)] + [(1, 0)] * rotation
             rotations.append(rots)
 

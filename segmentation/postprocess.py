@@ -22,12 +22,17 @@ from typing import List, Set, Tuple
 np.set_printoptions(precision=5, suppress=True)
 
 def create_weight_map(box_size: int = 96, center_size: int = 60, min_weight: float = 0.1) -> np.ndarray:
-    """Create weight map for volume merging."""
+    """Create 3D weight map for blending overlapping tile predictions.
+
+    Center region (60³) has weight 1.0, edges fade to min_weight.
+    This reduces seam artifacts when merging overlapping tiles.
+    """
     start_falloff = (box_size - center_size) // 2
     falloff = np.linspace(min_weight, 1.0, start_falloff, dtype=np.float32)
     dim_mask = np.ones(box_size, dtype=np.float32)
     dim_mask[:start_falloff] = falloff
     dim_mask[-start_falloff:] = falloff[::-1]
+    # Outer product to create 3D weight map
     return dim_mask[:, None, None] * dim_mask[None, :, None] * dim_mask[None, None, :]
 
 class MicrotubuleProcessor:
@@ -115,14 +120,23 @@ class MicrotubuleProcessor:
         return merged, min_coords
     
     def process_volume(self, probability_threshold: float = 0.5) -> np.ndarray:
-        """Process full volume using wavefront propagation."""
+        """Process full volume using wavefront propagation.
+
+        Algorithm: Process tiles in connected components. For each component:
+        1. Start with one tile, find all overlapping tiles (wavefront)
+        2. Group overlapping tiles into disjoint sets (non-overlapping clusters)
+        3. Merge each cluster with distance-weighted blending
+        4. Threshold and skeletonize the merged prediction
+        5. Expand wavefront to newly discovered overlapping tiles
+        6. Repeat until all tiles in component are processed
+        """
         processed = set()
         all_points = []
         unprocessed = set(range(len(self.boxes)))
-        
+
         print(f"Processing {len(self.boxes)} boxes...")
         component = 0
-        
+
         while unprocessed:
             component += 1
             start_idx = unprocessed.pop()

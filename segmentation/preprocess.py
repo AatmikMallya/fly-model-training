@@ -66,10 +66,12 @@ def is_valid_box(box_min: np.ndarray, box_max: np.ndarray, min_size: int = 20) -
     return np.all(size >= min_size)
 
 def get_boxes_for_point(center: np.ndarray, radius: float, tile_size: int = 96, min_overlap: int = 15) -> List[List[List[int]]]:
-    """Adaptively place minimum number of boxes needed to cover area around point"""
+    """Adaptively place minimum number of boxes needed to cover area around point."""
+    # Strategy: place center box, then add surrounding boxes in concentric rings
+    # if the neuron radius at this point is large enough to need them
     boxes = []
     half_size = tile_size // 2
-    
+
     # Always place center box
     box_min = center - half_size
     box_max = box_min + tile_size
@@ -140,14 +142,19 @@ def get_boxes_for_point(center: np.ndarray, radius: float, tile_size: int = 96, 
     return boxes
 
 def generate_optimized_boxes(df: pd.DataFrame, tile_size: int = 96, min_overlap: int = 15) -> List[List[List[int]]]:
-    """Generate minimal set of boxes ensuring complete coverage"""
+    """Generate minimal set of boxes ensuring complete skeleton coverage.
+
+    Algorithm: Walk along skeleton paths (using link field), placing boxes at intervals.
+    At each point, adaptively add more boxes if the neuron radius is large.
+    Finally, check for any uncovered skeleton points and add boxes for them.
+    """
     boxes = set()
     half_size = tile_size // 2
-    
-    # Pre-compute necessary arrays
+
+    # Pre-compute necessary arrays from skeleton dataframe
     points = df[['z', 'y', 'x']].values
     radii = df['radius'].values
-    links = df['link'].values
+    links = df['link'].values  # Each point links to its parent in the skeleton tree
     rowid_to_idx = {row.rowId: i for i, row in df.iterrows()}
     
     print(f"Processing {len(points)} points...")
@@ -292,14 +299,20 @@ def filter_empty_boxes(boxes, seg_data):
     print(f"Removed {len(boxes) - len(filtered_boxes)} empty boxes")
     return np.array(filtered_boxes), filtered_seg_data
 
-def find_uncovered_boundaries(filtered_boxes: np.ndarray, 
+def find_uncovered_boundaries(filtered_boxes: np.ndarray,
                             filtered_seg_data: np.ndarray,
                             tile_size: int = 96,
                             min_overlap: int = 15,
                             boundary_threshold: float = 0.2,
                             max_iterations: int = 5) -> np.ndarray:
+    """Iteratively expand coverage where segmentation touches tile boundaries.
+
+    If a tile has significant segmentation at its boundary (>threshold), the neuron
+    likely extends beyond that tile. Add a new overlapping tile in that direction.
+    Repeat until no boundaries have significant content or max iterations reached.
+    """
     min_bounds = np.array([0, 0, 0])
-    max_bounds = np.array([41344, 37888, 34367])
+    max_bounds = np.array([41344, 37888, 34367])  # Hemibrain dataset bounds
     
     all_boxes = filtered_boxes
     all_seg_data = filtered_seg_data
@@ -307,11 +320,11 @@ def find_uncovered_boundaries(filtered_boxes: np.ndarray,
     total_new_boxes = []
     total_new_seg_data = []
     
-    # Pre-compute directions once
+    # Direction vectors for the 6 faces of each box: -X, +X, -Y, +Y, -Z, +Z
     directions = np.array([
-        [-1,0,0], [1,0,0],  # X
-        [0,-1,0], [0,1,0],  # Y
-        [0,0,-1], [0,0,1]   # Z
+        [-1,0,0], [1,0,0],
+        [0,-1,0], [0,1,0],
+        [0,0,-1], [0,0,1]
     ])
 
     for iteration in range(max_iterations):
