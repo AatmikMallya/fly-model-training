@@ -1,4 +1,15 @@
 # postprocess.py
+"""
+Postprocessing for microtubule segmentation inference pipeline.
+
+Merges overlapping tile predictions using distance-weighted blending,
+thresholds the probability maps, and skeletonizes the result.
+
+Usage:
+    python postprocess.py --input_dir /path/to/unet_output \\
+                          --output_dir /path/to/final_output \\
+                          --bodyId 12345
+"""
 # ================== Imports ==================
 import numpy as np
 import argparse
@@ -6,7 +17,7 @@ import os
 from scipy.spatial import KDTree
 from skimage.morphology import skeletonize_3d
 import networkx as nx
-from typing import Set, Tuple
+from typing import List, Set, Tuple
 
 np.set_printoptions(precision=5, suppress=True)
 

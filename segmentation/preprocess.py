@@ -1,9 +1,19 @@
 # preprocess.py
+"""
+Preprocessing for microtubule segmentation inference pipeline.
+
+Fetches neuron skeleton from neuprint, generates tiled 96³ subvolumes
+covering the neuron, and saves the boxes and segmentation data.
+
+Usage:
+    python preprocess.py --bodyId 12345 --output_dir /path/to/output
+"""
 # ================== Imports ==================
 import numpy as np
 import argparse
 import os
-import importlib
+import random
+import sys
 import pandas as pd
 from scipy.spatial import KDTree
 from neuprint import fetch_skeleton
@@ -11,17 +21,12 @@ from typing import List, Tuple
 
 np.set_printoptions(precision=5, suppress=True)
 
-# Local imports
-def import_module(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+# Add parent directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import BASE_DIR, GOOGLE_CREDENTIALS, UTIL_DIR
+from util_files import voxel_utils
 
-home_dir = '/home/am3833/project/fly/segmentation'
-voxel_utils = import_module('voxel_utils', f'{home_dir}/util_files/voxel_utils.py')
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '~/.config/gcloud/application_default_credentials.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser(GOOGLE_CREDENTIALS)
 
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)

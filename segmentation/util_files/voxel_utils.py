@@ -1,6 +1,18 @@
 # voxel_utils.py
-# Utility functions for fetching volumetric data from neuroglancer datasets
+"""
+Utility functions for fetching volumetric data from neuroglancer datasets.
 
+Provides batched access to FlyEM Hemibrain and Optic Lobe datasets via tensorstore.
+Handles boundary conditions by zero-padding when requested volumes extend beyond
+dataset bounds.
+
+Supported data types:
+    - grayscale: Raw EM data
+    - grayscale_clahe: Contrast-enhanced EM data (CLAHE)
+    - segmentation: Neuron body ID segmentation
+    - mito-objects: Mitochondria segmentation
+    - rois: Region of interest labels
+"""
 import numpy as np
 import tensorstore as ts
 

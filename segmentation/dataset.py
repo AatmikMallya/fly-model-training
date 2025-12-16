@@ -1,8 +1,26 @@
+# dataset.py
+"""
+PyTorch Dataset class for microtubule segmentation training.
+
+Loads paired image/label volumes from disk, crops them from 100³ to 96³ voxels,
+and optionally applies data augmentation transforms.
+
+Expected directory structure:
+    image_dir/
+        subvol_001.npy
+        subvol_002.npy
+        ...
+    label_dir/
+        subvol_001.npy  (matching filenames)
+        subvol_002.npy
+        ...
+"""
 import os
 from pathlib import Path
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+
 
 class MicrotubuleDataset(Dataset):
     def __init__(self, image_dir, label_dir, indices=None, transforms=None):

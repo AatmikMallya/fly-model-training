@@ -1,9 +1,21 @@
 # inference.py
+"""
+Inference script for microtubule segmentation.
+
+Loads preprocessed subvolumes, runs them through the trained U-Net model,
+and saves the raw prediction probabilities.
+
+Usage:
+    python inference.py --input_dir /path/to/preprocess_output \\
+                        --output_dir /path/to/unet_output \\
+                        --checkpoint_path /path/to/model.pt \\
+                        --bodyId 12345
+"""
 # ================== Imports ==================
 import numpy as np
 import argparse
 import os
-import importlib
+import sys
 from time import time
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -11,17 +23,12 @@ from monai.networks.nets import UNet
 
 np.set_printoptions(precision=5, suppress=True)
 
-# Local imports
-def import_module(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+# Add parent directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from paths import GOOGLE_CREDENTIALS
+from util_files import voxel_utils
 
-home_dir = '/home/am3833/project/fly/segmentation'
-voxel_utils = import_module('voxel_utils', f'{home_dir}/util_files/voxel_utils.py')
-
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '~/.config/gcloud/application_default_credentials.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser(GOOGLE_CREDENTIALS)
 
 class MicrotubuleInferenceDataset(Dataset):
     def __init__(self, gray_data: np.ndarray):

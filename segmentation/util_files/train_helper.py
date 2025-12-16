@@ -1,6 +1,17 @@
 # train_helper.py
-# Training utilities for microtubule segmentation
+"""
+Training utilities for microtubule segmentation.
 
+Contains:
+    - Hyperparameter configuration (hyperparameters dict)
+    - Model initialization (initialize_model)
+    - Loss functions (bce_dice_loss)
+    - Metrics computation (compute_segmentation_metrics)
+    - Data augmentation (get_uniform_transforms - all 48 3D rotations/flips)
+    - Checkpointing utilities (save_checkpoint, log_final_metrics)
+
+To modify training configuration, edit the hyperparameters dict below.
+"""
 import os
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '0'
 

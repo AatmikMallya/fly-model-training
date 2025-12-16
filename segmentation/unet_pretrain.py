@@ -1,11 +1,21 @@
 # unet_pretrain.py
-# Training script for microtubule segmentation using MONAI UNet
+"""
+Training script for microtubule segmentation using MONAI 3D U-Net.
 
+Trains a 3D U-Net on annotated 100³ voxel subvolumes to segment microtubules
+from electron microscopy data. Uses mixed precision training, data augmentation
+(all 48 rotation/flip combinations), and logs to Weights & Biases.
+
+Usage:
+    python unet_pretrain.py
+
+Configuration is controlled via util_files/train_helper.py hyperparameters dict.
+"""
 # ================== Imports ==================
 import os
+import sys
 import random
 import datetime
-import importlib
 
 import numpy as np
 import wandb
@@ -20,18 +30,11 @@ from monai.utils import set_determinism
 
 np.set_printoptions(precision=5, suppress=True)
 
-# Local imports
-def import_module(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+# Add parent directory to path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from util_files import train_helper
+from dataset import MicrotubuleDataset
 
-home_dir = '/home/am3833/project/fly/segmentation'
-train_helper = import_module('train_helper', f'{home_dir}/util_files/train_helper.py')
-dataset_module = import_module('dataset', f'{home_dir}/dataset.py')
-
-MicrotubuleDataset = dataset_module.MicrotubuleDataset
 hyperparameters = train_helper.hyperparameters
 
 # ================== Configuration Variables ==================
