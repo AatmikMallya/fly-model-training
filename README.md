@@ -45,26 +45,6 @@ The model was trained with the folowing configuration:
 1. **Training** (`run_train.sh`): Train the U-Net on annotated 100³ voxel subvolumes
 2. **Inference Pipeline** (`batch_pipeline.sh`): For each neuron: fetch data → run inference → merge & skeletonize
 
-## Project Structure
-
-```
-.
-├── run_train.sh                 # SLURM job: training
-├── README.md
-├── segmentation/
-│   ├── batch_pipeline.sh        # SLURM job: inference pipeline
-│   ├── unet_pretrain.py         # Training script
-│   ├── preprocess.py            # Fetch & tile neuron volumes
-│   ├── inference.py             # Run U-Net on tiles
-│   ├── postprocess.py           # Merge tiles & skeletonize
-│   ├── dataset.py               # PyTorch dataset class
-│   ├── lc_bodyids.txt           # List of neuron IDs to process
-│   ├── requirements.txt         # Python dependencies
-│   └── util_files/
-│       ├── train_helper.py      # Training utilities, model configs, loss functions
-│       └── voxel_utils.py       # Tensorstore data fetching
-```
-
 ## Setup
 
 ### 1. Prerequisites
@@ -96,7 +76,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="~/.config/gcloud/application_default_cred
 
 ### 4. Update Paths
 
-**Important**: Update these files for your environment:
+Update these files for your environment:
 
 | File | What to change |
 |------|----------------|
@@ -110,7 +90,7 @@ The Python scripts (`preprocess.py`, `inference.py`, `unet_pretrain.py`) import 
 
 ### Training Data
 
-Training uses manually annotated 100×100×100 voxel subvolumes (8nm/voxel = 800×800×800 nm):
+Training uses manually annotated 100×100×100 voxel subvolumes (8nm/voxel = 800×800×800 nm) that are cropped to 96x96x96 voxels:
 - **Images**: `training/subvols/image/*.npy` - grayscale EM data
 - **Labels**: `training/labeled_binary_large/*.npy` - binary microtubule masks
 
