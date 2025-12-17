@@ -10,7 +10,7 @@ The actual model used to generate the final segmentation is at `/home/am3833/fly
 
 ### Validation metrics for the final model
 
-**Validation set (standard 80/20 split)**
+**Validation set (with random 80/20 split)**
 - Dice: 0.827
 - Precision: 0.866
 - Recall: 0.800
