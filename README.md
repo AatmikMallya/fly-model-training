@@ -8,6 +8,8 @@ This repository only contains code. All data, logs, models, and large files are 
 ### Final trained model details
 The actual model used to generate the final segmentation is at `/home/am3833/fly/segmentation/best_model/best_final_model.pt`. It can be loaded with the PyTorch library.
 
+URL for final model in weights & biases: https://wandb.ai/aatmikmallya/microtubule-segmentation/runs/imogdeku?nw=nwuseraatmik54
+
 ### Validation metrics for the final model
 
 **Validation set (with random 80/20 split)**
