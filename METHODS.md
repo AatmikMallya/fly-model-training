@@ -2,6 +2,8 @@
 
 This document describes the methods used to generate the microtubule segmentation dataset.
 
+More detail is provided in `METHODS.md`.
+
 ---
 
 ## 1. Data Source
